@@ -15,7 +15,6 @@ func (c Coins) ForEach(f func(int)) {
 func DPFewestCoinsMakeChange(c Coins, sum int) int {
 	states := make([]int, sum+1)
 
-	states[0] = 0
 	for i := 1; i < len(states); i++ {
 		countCountChoices := []int{}
 		c.ForEach(func(coin int) {
@@ -44,4 +43,24 @@ func min(arr []int) int {
 	}
 
 	return min
+}
+
+// DPWaysToMakeChange computes the number of ways to make change for a given sum with a set of coin
+// denominations. We perform memorization by recording and updating a state for each subproblem. The
+// subproblem can be seen as incrementally making change for a subsum using 1 coin, 2 coin, and so
+// forth...
+func DPWaysToMakeChange(c Coins, sum int) int {
+	states := make([]int, sum+1)
+
+	states[0] = 1
+	c.ForEach(func(coin int) {
+		for i := 1; i < len(states); i++ {
+			remain := i - coin
+			if remain >= 0 {
+				states[i] += states[remain]
+			}
+		}
+	})
+
+	return states[len(states)-1]
 }
